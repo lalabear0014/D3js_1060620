@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>JS Bin</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
+</head>
+<body>
+  <script>
+      var arr1=["A","B","A","C"];
+      var uniArr = unique(arr1);
+
+      console.log(uniArr);
+
+      function unique(array){
+          var n = []; 
+          for(var i=0;i<array.length;i++){
+              if(n.indexOf(array[i])<0)
+                  n.push(array[i]);
+          }
+          return n;
+      }
+  </script>
+</body>
+</html>
