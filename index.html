@@ -1,394 +1,382 @@
+
 <!doctype html>
 <html>
+
 <head>
     <meta charset="UTF-8">
     <title>Untitled Document</title>
-    <script src="https://d3js.org/d3.v3.js"></script>
+    <script src="https://d3js.org/d3.v3.min.js"></script>
     <style>
-        body{
-            background: #eee;
-        }
-        .axis path, .axis line{
+        .axis path,
+        .axis line {
             fill: none;
             stroke: black;
             shape-rendering: auto;
         }
-        .axis text{
+        
+        .axis text {
             font-size: 12px;
-            fill: blue;
+            fill: black;
         }
-        #tooltip{
-          position: absolute;
-          /*left: 20px;*/
-          /*top:  100px;*/
-          background: #fff;
-          width: 150px;
-          height: auto;
-          padding: 0px 10px;
-          border-radius: 5px;
-          box-shadow: 5px 5px 10px rgba(0,0,0,0.3);
+        
+        #tooltip {
+            position: absolute;
+            /* left: 20px; */
+            /* top:  100px; */
+            background: #fff;
+            width: 150px;
+            height: auto;
+            padding: 0px 10px;
+            border-radius: 5px;
+            box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3);
         }
-        #tooltip.hidden{
-          display: none;
+        
+        #tooltip.hidden {
+            display: none;
         }
     </style>
 </head>
+
 <body>
-    <svg width="800" height="300"></svg>
-    <script>
-        var dataSet =[{"date":"2016/8/1","city":"臺北市","cid":"A","industry":"不動產開發業","platform":"無載具","number":1530691,"amount":2081432419},{"date":"2016/8/1","city":"臺北市","cid":"A","industry":"批發業","platform":"無載具","number":4142289,"amount":5565063958},{"date":"2016/8/1","city":"臺北市","cid":"A","industry":"資料處理及資訊供應服務業","platform":"無載具","number":780708,"amount":1359622827},{"date":"2016/8/1","city":"臺北市","cid":"A","industry":"零售業","platform":"無載具","number":64927420,"amount":19680973217},{"date":"2016/8/1","city":"臺北市","cid":"A","industry":"電信業","platform":"無載具","number":225300,"amount":2302012551},{"date":"2016/8/1","city":"臺北市","cid":"A","industry":"餐飲業","platform":"無載具","number":9855745,"amount":5193141219},{"date":"2016/8/1","city":"臺北市","cid":"A","industry":"影片服務、聲音錄製及音樂出版業","platform":"使用載具","number":1518980,"amount":2606453896},{"date":"2016/8/1","city":"臺北市","cid":"A","industry":"資料處理及資訊供應服務業","platform":"使用載具","number":3936592,"amount":2441866930},{"date":"2016/8/1","city":"臺北市","cid":"A","industry":"零售業","platform":"使用載具","number":9675319,"amount":4693713798},{"date":"2016/8/1","city":"臺北市","cid":"A","industry":"電信業","platform":"使用載具","number":15939352,"amount":15982550394},{"date":"2016/8/1","city":"臺北市","cid":"A","industry":"電力及燃氣供應業","platform":"使用載具","number":688044,"amount":6096595655}];
-        var w = 800,
-            h = 300,
-            p = 80;
-
-        svg();
-        bind(dataSet);
-        render();
-
-        function svg(){
-                d3.select("body").append("svg").attr({
-                    width: w,
-                    height: h
-                });
-                d3.select("svg").append("g").append("rect").attr({
-                    width: "100%",
-                    height: "100%",
-                    fill: "white"
-                });
-        }
-        
-        function bind(dataSet){
-            var selection = d3.select("svg")
-            .selectAll("rect")
-            .data(dataSet);
-            selection.enter().append("rect");
-            selection.exit().remove();
-
-            var selection_text = d3.select("svg")
-            .selectAll("text")
-            .data(dataSet);
-            selection_text.enter().append("text");
-            selection_text.exit().remove();
-        }
-        
-        function render(){
-            var xScale = d3.scale.linear()
-                            .domain([
-                                    d3.min(dataSet,function(d){ return d.amount; }),
-                                    d3.max(dataSet,function(d){ return d.amount; })
-                            ])
-                            .range([10,300]);
-
-            d3.selectAll("rect").attr({
-                                        x: 300,
-                                        y: function(d,i){
-                                        return 10+20*i;
-                                        },
-                                        width: function(d,i){
-                                        // return d.amount/100000000;
-                                        return xScale(d.amount);
-                                        },
-                                        height: 18,
-                                        fill: "red"
-            });
-            d3.selectAll("text").attr({
-                                    x: 10,
-                                    y: function(d,i){
-                                        return 25+20*i;
-                                    }
-                                })
-                                .text(function(d){
-                                        return d.industry;
-                                });
-            // 座標軸axis-------------------------------------
-            var xAxis = d3.svg.axis().scale(xScale)
-                                .ticks(4)
-                                .tickFormat(function(d){
-                                    return d/1000000000+'G';
-                                });
-            d3.select("svg").append("text")
-                            .attr("class","axis")
-                            .attr("transform","translate(295,255)")
-                            .attr({
-                            "font-size": 10,
-                            fill: "blue"
-                            })
-                            .text("0G");
-            d3.select("svg").append("g")
-                            .attr("class","axis")
-                            .attr("transform","translate(290,240)")
-                            .call(xAxis);    
-        }    
-    </script>
-    <hr>
-    <svg width="900" height="600"></svg>
-    <div id="tooltip" class="hidden">
+    <svg width="900" height="400" id="svg1">
+<hr>
+<div id="svg2"></div>
+<div id="tooltip" class="hidden">
       <p><strong id="city">Hello</strong></p>
       <p id="industry">tooltip</p>
-    </div>
-    <script>
-        var w = 900;
-        var h = 600;
-        var padding = 90;
-        var letterList = ["A","B","C","D","E","F","G","H","I","J","K","M","N","O","P","Q","T","U","V","W","X","Z"];
-        
-        svg();       
-    
-        d3.csv("invoice.csv", function(dataSet){         
-           bind(dataSet);
-           render(dataSet);
-           btnList(dataSet);
+</div>
+<hr>
+<div id="svg5"></div>
+
+<script>
+    d3.json('invoice-taipei.json', function(dataSet){
+        var fDataSet = dataSet.filter(function(d){
+            return d.city == "臺北市" && d.amount > 1000000000 && d.date == "2016/8/1";
+        });
+        var min = d3.min(fDataSet, function(d){
+            return d.amount;
         });
         
+        var max = d3.max(fDataSet, function(d){
+            return d.amount;
+        });
+        var xScale = d3.scale.linear()
+                                .domain([min, max])
+                                .range([10,300]);
+        var xScale1 = d3.scale.linear()
+                                .domain([0, max])
+                                .range([0,300]);
         
-        function svg(){
-            d3.select("body").append("svg").attr({
-                width: w,
-                height: h
-            });
-            d3.select("svg").append("g").append("rect").attr({
-                width: "100%",
-                height: "100%",
-                fill: "white"
-            });
-            d3.select("svg").append("g").attr("id","axisX");    // attr({id:axisX})
-            d3.select("svg").append("g").attr("id","axisY");
-        }
+        var xAxis = d3.svg.axis()
+                            .scale(xScale1)
+                            .orient("bottom")
+                            .ticks(5)
+                            .tickFormat(function(d){
+                                return +d/1000000000 + "G";
+                            })
         
-        function bind(dataSet){
-            var selection = d3.select("svg")
-                                .selectAll("circle")
-                                .data(dataSet);
-            selection.enter().append("circle");
-            selection.exit().remove();
-        }
-        function render(dataSet){
-          //比例尺們 xScale, yScale, rScale, fScale
-           var xScale = d3.time.scale()
-                    .domain([
-                        new Date(d3.min(dataSet, function(d){
-                            return new Date(d.date);
-                        })),
-                        new Date(d3.max(dataSet, function(d){
-                            return new Date(d.date);
-                        }))
-                    ])
-                    .range([padding,w-padding]);
-           var yScale = d3.scale.linear()
-                    .domain([0,d3.max(dataSet, function(d){
-                        return +d.number;
-                    })])
-                    .range([h-padding,padding]);
-           var rScale = d3.scale.linear()
-                    .domain([
-                        d3.min(dataSet, function(d){
-                            return +d.amount;
-                        }),
-                        d3.max(dataSet, function(d){
-                            return +d.amount;
-                        })
-                    ])
-                    .range([5,20]);
-           var fScale = d3.scale.category20();
-            
-           //開始畫圈圈
-           d3.selectAll("circle")
-             .attr({
-                cx: function(d){
-                  return xScale(new Date(d.date)); 
-                },
-                cy:function(d){
-                  return yScale(+d.number); 
-                },
-                r:function(d){
-                  return rScale(+d.amount); 
-                },
-                fill: function(d){
-                  return fScale(letterList.indexOf(d.cid));
-                }
-             })
-             .on("mouseover", function(d){
-                // this是當下元素
-                // position是以字串形式儲存，須更改屬性(+)
-                var posX = +d3.select(this).attr("cx");
-                var posY = +d3.select(this).attr("cy");
-                var tooltip = d3.select("#tooltip")
-                                .style({
-                                   left: (posX+20) + "px",
-                                   top: (posY+20) + "px"
-                                });
-               tooltip.select("#city").text(function(){
-                   return d.city;
-               });
-               tooltip.select("#industry").text(function(){
-                   return d.industry;
-               });
-               
-                // 替換tooltip內容(選擇其id後,修改內容)
-                // 當mouseover，隱藏功能取消
-                tooltip.classed("hidden",false);
-             })
-             .on("mouseout", function(d){
-                // 當mouseout，隱藏功能開啟
-                d3.select("#tooltip").classed("hidden",true);
-             });
-            
-           //開始畫x,y軸線 
-            var xAxis = d3.svg.axis().scale(xScale).orient("bottom");
-            var yAxis = d3.svg.axis().scale(yScale).orient("left");
-            d3.select("svg")
-                .select("g#axisX")
-                .attr("class","axis")
-                .attr("transform", "translate(0,"+(h-padding+10)+")")
-                .call(xAxis);
-            d3.select("svg")
-                .select("g#axisY")
-                .attr("class","axis")
-                .attr("transform", "translate("+(padding-10)+",0)")
-                .call(yAxis);
-        }
-        function btnList(dataSet){    
-            //industryArr: 行業別陣列(包含重複項目)           
-            var industryArr = dataSet.map(function(d){
-               return d.industry;
-            });  
-            //uniqueIndustryArr: 行業別陣列(無重複項目) 
-            var uniqueIndustryArr = unique(industryArr);
-            
-            //filterIndustryArr: 行業別陣列(去除空白項目) 
-            var filterIndustryArr = uniqueIndustryArr.filter(function(d){
-               return d != ""; 
+        d3.select("#svg1")
+            .append("g")
+            .attr("class", "axis")
+            .attr("transform", "translate("+350+","+300+")")
+            .call(xAxis);
+        
+        for(var i=0; i < fDataSet.length; i++){
+            d3.select("#svg1")
+                .append('text')
+                .attr({
+                    x:10,
+                    y:20+ 25*i,
+                "font-size":20,
+                }).text(fDataSet[i].industry);
+            d3.select("#svg1").append('rect').attr({
+                x:350,
+                y:5+25*i,
+                height:20,
+                width:xScale(fDataSet[i].amount) ,
+                fill:"red"
+            })
+        };
+    })
+</script>
+<script>
+    var w = 900;
+    var h = 600;
+    var p = 60;
+    
+    svg();
+    
+    d3.csv("invoice.csv", mid, function(dataSet){
+        bind(dataSet);
+        render(dataSet);
+        btnList(dataSet);
+    });
+    
+    function btnList(dataSet){
+            var industry_list = dataSet.map(function(d){
+                return d.industry;
             });
+            var blank_filter = industry_list.filter(function(d){
+                return d !="";
+            }) 
+            var btn_list = unique(blank_filter);
             
-            //畫出按鈕們
-            // bind option -------------------------------
-            var selection = d3.select("body")
-                            .append("select")
-                            .selectAll("option")
-                            .data(filterIndustryArr);
-            
+            var selection = d3.select("#svg2").append("select")
+                                    .selectAll("option")
+                                    .data(btn_list);
             selection.enter()
-                    .append("option")
-                    .attr({
-                        value: function(d){ return d; }
-                    })
-                    .text(function(d){ return d; });
-            
+                        .append("option")
+                        .attr({
+                            value: function(d){
+                                return d;
+                            }
+                        })
+                        .text(function(d){
+                            return d;
+                        });
             d3.select("select").insert("option", ":first-child")
-                               .attr("value", "顯示全部")
-                               .text("顯示全部"); 
+                                    .attr("value","顯示全部")
+                                    .text("顯示全部");
             
-            d3.select("select")
-                .on("change",function(){
-                    var industryName = d3.select("select").property("value");
-                    update(industryName);
-                });
-                      
+            d3.select("select").on("change", function(d){
+                var industryName = d3.select("select").property("value");
+                update(industryName);
+            });
+            
             function update(industryName){
-                //過濾行業別符合者
                 if(industryName === "顯示全部"){
                     bind(dataSet);
                     render(dataSet);
                     return;
                 }
                 var newDataSet = dataSet.filter(function(d){
-                    return d.industry === industryName;
+                   return d.industry === industryName; 
                 });
                 
-                //重新整理bind,render
                 bind(newDataSet);
                 render(newDataSet);
             }
             
-            function unique(array){
-              var n = []; 
-              for(var i = 0; i < array.length; i++){
-                if (n.indexOf(array[i]) == -1){
-                    n.push(array[i]);
+            function unique(data){
+                var array=[];
+                for(var i =0; i <data.length; i++){
+                    if(array.indexOf(data[i]) == -1){
+                        array.push(data[i]);
+                    }
                 }
-              }
-              return n;
+                return array
             }
         }
-    </script>
-    <hr>
-    <svg width="340" height="340"></svg>
-    <script>
-        var svg = d3.select("body").append("svg").attr({
-           width: "340",
-           height: "340"
+        
+    
+    function mid(d){
+        d.number = +d.number;
+        d.amount = +d.amount;
+        return d;
+    }
+
+    function svg(){
+        d3.select("#svg2").append("svg").attr({
+            width: w,
+            height: h
         });
+        
+        d3.select('#svg2>svg').append("g")
+                            .append("rect")
+                            .attr({
+                                width: "100%",
+                                height: "100%",
+                                fill:"white"
+                            });
+        d3.select("#svg2>svg").append("g").attr("id","axisX");
+        d3.select("#svg2>svg").append("g").attr("id","axisY");
+    }
+    
+    function bind(dataSet){
+        var selection = d3.select("#svg2>svg")
+                            .selectAll("circle")
+                            .data(dataSet);
+        selection.enter().append("circle");
+        selection.exit().remove();
+    }
+    
+    function render(dataSet){
+        
+        var xScale = d3.time.scale()
+            .domain([
+                new Date(d3.min(dataSet, function(d){
+                    return new Date(d.date);
+                })),
+                new Date(d3.max(dataSet, function(d){
+                    return new Date(d.date);
+                }))
+            ])
+            .range([p, w-p]);
+        
+        var yScale = d3.scale.linear()
+            .domain([
+                0, d3.max(dataSet, function(d){
+                    return d.number;
+                })
+            ])
+            .range([h-p, p]);
+        
+        var rScale = d3.scale.linear()
+            .domain([d3.min(dataSet, function(d){
+                return d.amount;
+            }), d3.max(dataSet, function(d){
+                return d.amount;
+                })
+            ])
+            .range([5, 30]);
+        
+        var fScale = d3.scale.category20();
+        
+        var xAxis = d3.svg.axis()
+                            .scale(xScale);
+        d3.select("#svg2>svg").select('g#axisX')
+                                .attr(
+                                    "class", "axis"
+                                )
+                                .attr("transform", "translate(0,"+(h-p+12)+")").call(xAxis);
+        var yAxis = d3.svg.axis()
+                                .scale(yScale)
+                                .orient("left")
+                                .tickFormat(function(d){
+                                    return d/ 1000000 +"M";
+                                });
+        d3.select('#svg2>svg').select('g#axisY')
+                                .attr(
+                                    "class", "axis"
+                                )
+                                .attr("transform", "translate("+(p-12)+",0)").call(yAxis);
+        d3.select('#svg2>svg').selectAll("circle")
+                .attr({
+                    cx: function(d) {
+                        return xScale(new Date(d.date));
+                    },
+                    cy: function(d) {
+                        return yScale(d.number);
+                    },
+                    r: function(d) {
+                        return rScale(d.amount);
+                    },
+                    fill: function(d) {
+                        return fScale(d.city);
+                    }
 
-        svg.append("g").append("rect").attr({
-          fill: "white",
-          width: "100%",
-          height: "100%"
-        });
+                })
+                .on("mouseover", function(d){
+                    var posX = +d3.select(this).attr("cx")     
+                    var posY = +d3.select(this).attr("cy")
+                    console.log(posX);
+                    var tooltip = d3.select("#tooltip")
+                                            .style({
+                                                left: (+posX +20) +"px",
+                                                top: (+posY+580) +"px" ,
+                                            });
+                    tooltip.select("#city").text(function(){
+                         return d.city;
+                    });
+               
+                    tooltip.select("#industry").text(function(){
+                         return d.industry;
+                    });
+               
+               
+                    tooltip.classed("hidden", false);
+                }).on("mouseout", function(d){
+                    d3.select("#tooltip").classed("hidden",false);
+                });
+    }
+    
+</script>
+<script>
+    var svg = d3.select("#svg5").append("svg").attr({
+       width: "340",
+       height: "340"
+    });
 
-        //--------------------------------
+svg.append("g").append("rect").attr({
+  fill: "white",
+  width: "100%",
+  height: "100%"
+});
 
-        var easeArr = ["linear", "quad", "cubic", "sin", "exp", "circle", "elastic", "back", "bounce"];
+//--------------------------------
 
-        bind(easeArr);
-        render();
+var easeArr = ["linear", "quad", "cubic", "sin", "exp", "circle", "elastic", "back", "bounce"];
 
-        function bind(dataSet){
-          var selection_circle = d3.select("svg").selectAll("circle").data(dataSet);
-          var selection_text = d3.select("svg").selectAll("text").data(dataSet);
-          var selection_line = d3.select("svg").selectAll("line").data(dataSet);
+bind5(easeArr);
+render5();
 
-          // 初始化設定
-          selection_line.enter().append("line").attr({
-                x1: 100,
-                y1: function(d,i){
-                   return 20+i*35;
-                },
-                x2: 300,
-                y2: function(d,i){
-                   return 20+i*35;
-                },
-                stroke: "lightgreen"
-           }).text(function(d){
-              return d;
-           });
-          selection_line.exit().remove();
+function bind5(dataSet){
+  var selection_circle = d3.select("#svg5>svg").selectAll("circle").data(dataSet);
+  var selection_text = d3.select("#svg5>svg").selectAll("text").data(dataSet);
+  var selection_line = d3.select("#svg5>svg").selectAll("line").data(dataSet);
+  
+  // 初始化設定
+  selection_line.enter().append("line").attr({
+        x1: 100,
+        y1: function(d,i){
+           return 20+i*35;
+        },
+        x2: 300,
+        y2: function(d,i){
+           return 20+i*35;
+        },
+        stroke: "lightgreen"
+   }).text(function(d){
+      return d;
+   });
+  selection_line.exit().remove();
+  
+  selection_circle.enter().append("circle").attr({
+        cx: 100,
+        cy: function(d,i){
+           return 20+i*35;
+        },
+        r: 15,
+        fill: "gold"
+   });
+  selection_circle.exit().remove();
+  
+  selection_text.enter().append("text").attr({
+        x: 5,
+        y: function(d,i){
+           return 25+i*35;
+        },
+        fill: "black"
+   }).text(function(d){
+      return d;
+   });
+  selection_text.exit().remove();
+} 
 
-          selection_circle.enter().append("circle").attr({
-                cx: 100,
-                cy: function(d,i){
-                   return 20+i*35;
-                },
-                r: 15,
-                fill: "gold"
-           });
-          selection_circle.exit().remove();
-
-          selection_text.enter().append("text").attr({
-                x: 5,
-                y: function(d,i){
-                   return 25+i*35;
-                },
-                fill: "black"
-           }).text(function(d){
-              return d;
-           });
-          selection_text.exit().remove();
-        } 
-
-        function render(){
-          // 需要動畫的設定
-          d3.select("svg").selectAll("circle")
-          .on("click", function(d){
-              if (d3.select(this).attr("cx") < 150) {
-                d3.select(this).transition().ease(d)
-                  .attr({ cx: 300 })
-              }
-              else {
-                d3.select(this).transition().ease(d)
-                  .attr({ cx: 100 })
-              }  
-          });
-        }
-    </script>
+function render5(){
+  //需要動畫的設定
+  d3.select("#svg5>svg").selectAll("circle")
+  .on("click", function(d){
+    if(d3.select(this).attr("cx")<120){
+      d3.select(this)
+        .transition()
+        .duration(1000)
+        .ease(d)
+        .attr({
+            cx: 300
+        })
+    }
+    else{
+      d3.select(this)
+        .transition()
+        .duration(1000)
+        .ease(d)
+        .attr({
+            cx: 100
+        })
+    }
+  });
+}
+</script>
 </body>
 </html>
